@@ -11,5 +11,5 @@ NavigationBar(v-if="route.name !== 'home'")
 RouterView
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 </style>

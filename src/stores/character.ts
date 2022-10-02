@@ -1,4 +1,4 @@
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { provideApolloClient, useQuery } from '@vue/apollo-composable'
 import { apolloClient } from '@/plugins/apollo'
@@ -9,6 +9,11 @@ provideApolloClient(apolloClient)
 export const useCharacterStore = defineStore('character', () => {
   const characters = ref([])
 
+  const searchFilter = reactive({
+    name: '',
+    species: 'Human'
+  })
+
   const pagination = reactive({
     page: 1,
     count: null,
@@ -17,64 +22,63 @@ export const useCharacterStore = defineStore('character', () => {
     prev: null
   })
 
-  async function getCharacters (search?: string) {
-    try {
-      characters.value = []
+  const loading = reactive({
+    getCharacters: false
+  })
 
-      const { result } = useQuery(gql`
-        query getCharacters ($filter: FilterCharacter, $page: Int) {
-          characters(filter: $filter, page: $page) {
-            results {
-              type
-              image
+  function getCharacters () {
+    loading.getCharacters = true
+
+    characters.value = []
+
+    const { result, onResult } = useQuery(gql`
+      query getCharacters ($filter: FilterCharacter, $page: Int) {
+        characters(filter: $filter, page: $page) {
+          results {
+            type
+            image
+            id
+            gender
+            origin {
               id
-              gender
-              origin {
-                id
-                name
-              }
               name
-              status
-              species
             }
-            info {
-              count
-              next
-              pages
-              prev
-            }
+            name
+            status
+            species
+          }
+          info {
+            count
+            next
+            pages
+            prev
           }
         }
-      `, {
-        filter: search ? { name: search } : undefined,
-        page: pagination.page
-      })
+      }
+    `, {
+      filter: searchFilter || undefined,
+      page: pagination.page
+    })
 
-      watch(result, value => {
-        console.log(value.characters.info)
-        console.log(value.characters.results)
+    onResult(() => {
+      characters.value = result.value.characters.results
 
-        characters.value = value.characters.results
+      pagination.count = result.value.characters.info.count
+      pagination.pages = result.value.characters.info.pages
+      pagination.next = result.value.characters.info.next
+      pagination.prev = result.value.characters.info.prev
 
-        pagination.count = value.characters.info.count
-        pagination.pages = value.characters.info.pages
-        pagination.next = value.characters.info.next
-        pagination.prev = value.characters.info.prev
+      if (!result.value.characters.info.prev) pagination.page = 1
 
-        if (!value.characters.info.prev) pagination.page = 1
-
-        for (const character of characters.value) {
-          console.log(character.species)
-        }
-      })
-    } catch (error) {
-      console.error(error)
-    }
+      loading.getCharacters = false
+    })
   }
 
   return {
     characters,
+    searchFilter,
     pagination,
+    loading,
     getCharacters
   }
 })

@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { watchEffect } from 'vue'
 import { useCharacterStore } from '@/stores/character'
 import CharacterCard from '../components/CharacterCard.vue'
 import Pagination from '../components/Pagination.vue'
 import { AdjustmentsHorizontalIcon, HeartIcon } from '@heroicons/vue/24/outline/esm'
 
 const characterStore = useCharacterStore()
-
-characterStore.getCharacters()
 </script>
 
 <template lang="pug">
@@ -22,11 +19,17 @@ div(class="flex flex-col items-center justify-center mt-10 px-36")
       RouterLink(to="wishlist")
         HeartIcon(class="h-6 w-6 text-gray-300")
 
-  div(class="grid grid-cols-3 gap-9")
-    CharacterCard(v-for="character in characterStore.characters" :key="character.id" :character="character")
+  div(v-if="characterStore.loading.getCharacters && characterStore.characters.length === 0")
+    span Loading...
+
+  div(v-if="!characterStore.loading.getCharacters && characterStore.characters.length === 0")
+    span Characters not found 😔
+
+  div(class="grid grid-cols-3 gap-9" v-if="!characterStore.loading.getCharacters && characterStore.characters.length > 0")
+    CharacterCard(v-for="character in characterStore.characters" :character="character")
 
   Pagination
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 </style>

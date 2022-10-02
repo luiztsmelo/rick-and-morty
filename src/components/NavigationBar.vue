@@ -18,5 +18,5 @@ header(class=" h-20 flex items-center justify-between px-36")
       img(class="w-9 h-9 rounded-full" :src="userStore.user.image")
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 </style>

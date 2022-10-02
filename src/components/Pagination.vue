@@ -5,15 +5,15 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/outline/esm'
 const characterStore = useCharacterStore()
 
 const prevPage = () => {
-  if (characterStore.pagination.page > 1) {
-    characterStore.pagination.page--
+  if (characterStore.pagination.prev) {
+    characterStore.pagination.page = characterStore.pagination.prev
     characterStore.getCharacters()
   }
 }
 
 const nextPage = () => {
-  if (characterStore.pagination.pages && characterStore.pagination.page < characterStore.pagination.pages) {
-    characterStore.pagination.page++
+  if (characterStore.pagination.next) {
+    characterStore.pagination.page = characterStore.pagination.next
     characterStore.getCharacters()
   }
 }
@@ -23,7 +23,7 @@ const nextPage = () => {
 div(class="flex items-center justify-between w-full my-10" v-if="characterStore.characters.length > 0")
   a Discover all colections
 
-  button(class="flex items-center bg-gray-800 text-white focus:outline-none hover:bg-gray-600 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-base px-6 py-3" @click="nextPage")
+  button(class="flex items-center bg-gray-800 text-white focus:outline-none hover:bg-gray-600 focus:ring-1 focus:ring-gray-200 font-medium rounded-lg text-base px-6 py-3" @click="nextPage")
     span(class="text-bold text-lg") Next page
     ArrowRightIcon(class="h-5 w-5 ml-3")
 
@@ -40,5 +40,5 @@ div(class="flex items-center justify-between w-full my-10" v-if="characterStore.
     span(class="text-gray-400 ml-1") of {{ characterStore.pagination.pages }}
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 </style>

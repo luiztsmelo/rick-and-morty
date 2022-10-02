@@ -7,10 +7,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: Home,
-      redirect: {
-        name: 'search'
-      }
+      component: Home
     },
     {
       path: '/search',

@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { useCharacterStore } from '@/stores/character'
 import SearchBar from '../../components/SearchBar.vue'
 import CharacterList from '../../components/CharacterList.vue'
+
+const characterStore = useCharacterStore()
+
+characterStore.getCharacters()
 </script>
 
 <template lang="pug">
@@ -13,5 +18,5 @@ div(class="flex flex-col items-center justify-center w-full my-10")
 CharacterList
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 </style>
